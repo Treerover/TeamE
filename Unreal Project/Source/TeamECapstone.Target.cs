@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 public class TeamECapstoneTarget : TargetRules
 {
-	public TeamECapstoneTarget( TargetInfo Target) : base(Target)
+	public TeamECapstoneTarget(TargetInfo Target) : base(Target)
 	{
 		Type = TargetType.Game;
 		DefaultBuildSettings = BuildSettingsVersion.V2;
