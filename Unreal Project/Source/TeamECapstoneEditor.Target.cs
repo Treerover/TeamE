@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 public class TeamECapstoneEditorTarget : TargetRules
 {
-	public TeamECapstoneEditorTarget( TargetInfo Target) : base(Target)
+	public TeamECapstoneEditorTarget(TargetInfo Target) : base(Target)
 	{
 		Type = TargetType.Editor;
 		DefaultBuildSettings = BuildSettingsVersion.V2;
