@@ -16,6 +16,7 @@ public class TeamECapstone : ModuleRules
             "TeamECapstone/Enums",
             "TeamECapstone/Gamemodes",
             "TeamECapstone/Managers",
+            "TeamECapstone/Subsystems",
             "TeamECapstone/Controllers",
             "TeamECapstone/Actors/Abilities",
             "TeamECapstone/Actors/Pawns",

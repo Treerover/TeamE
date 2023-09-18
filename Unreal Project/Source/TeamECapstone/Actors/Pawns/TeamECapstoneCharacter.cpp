@@ -9,6 +9,7 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "EMPSystem.h"
 
 
 //////////////////////////////////////////////////////////////////////////
@@ -47,8 +48,8 @@ ATeamECapstoneCharacter::ATeamECapstoneCharacter()
 	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName); // Attach the camera to the end of the boom and let the boom adjust to match the controller orientation
 	FollowCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
 
-	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
-	// are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
+	//Add tags
+	Tags.Add("Player");
 }
 
 void ATeamECapstoneCharacter::BeginPlay()
@@ -64,6 +65,34 @@ void ATeamECapstoneCharacter::BeginPlay()
 			Subsystem->AddMappingContext(DefaultMappingContext, 0);
 		}
 	}
+}
+
+void ATeamECapstoneCharacter::Interact(const FInputActionValue& Value)
+{
+	FVector StartLocation = GetActorLocation(); // Player's location
+	FVector ForwardVector = GetActorForwardVector(); // Player's forward direction
+
+	FVector EndLocation = StartLocation + (ForwardVector * 500.0f); // Define the maximum distance of the raycast
+
+	FHitResult HitResult;
+	FCollisionQueryParams CollisionParams;
+	CollisionParams.AddIgnoredActor(this); // Ignore the player
+
+	//Debug message
+	DrawDebugLine(GetWorld(), StartLocation, EndLocation, FColor::Red, false, 1.0f, 0, 1.0f);
+
+
+	if (GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, EndLocation, ECC_Visibility, CollisionParams))
+	{
+		AEMPSystem* HitMachine = Cast<AEMPSystem>(HitResult.GetActor());
+
+		if (HitMachine)
+		{
+			// The button (EMP machine) is in range
+			HitMachine->OnButtonClicked();
+		}
+	}
+
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -84,6 +113,8 @@ void ATeamECapstoneCharacter::SetupPlayerInputComponent(class UInputComponent* P
 		//Looking
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &ATeamECapstoneCharacter::Look);
 
+		//Interacting
+		EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Triggered, this, &ATeamECapstoneCharacter::Interact);
 	}
 
 }
@@ -122,6 +153,11 @@ void ATeamECapstoneCharacter::Look(const FInputActionValue& Value)
 		AddControllerYawInput(LookAxisVector.X);
 		AddControllerPitchInput(LookAxisVector.Y);
 	}
+}
+
+bool ATeamECapstoneCharacter::IsInExtractionZone()
+{
+	return bInExtractionZone;
 }
 
 

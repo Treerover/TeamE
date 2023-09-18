@@ -37,10 +37,14 @@ class ATeamECapstoneCharacter : public ACharacter
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	class UInputAction* LookAction;
 
+	/** Interact Input Action */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	class UInputAction* InteractAction;
+
 public:
 	ATeamECapstoneCharacter();
 	
-
+	bool IsInExtractionZone();
 protected:
 
 	/** Called for movement input */
@@ -57,10 +61,19 @@ protected:
 	// To add mapping context
 	virtual void BeginPlay();
 
+	void Interact(const FInputActionValue& Value);
+
 public:
 	/** Returns CameraBoom subobject **/
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
 	/** Returns FollowCamera subobject **/
 	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
+
+
+
+public: 
+	bool bInExtractionZone = false;
+private:
+
 };
 
