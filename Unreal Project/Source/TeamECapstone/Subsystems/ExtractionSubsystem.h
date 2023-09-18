@@ -43,18 +43,25 @@ public:
 	//If the player is arming the bomb
 	bool bIsArming = false;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ExtractionSystem")
 	//Arming percent handle
 	FTimerHandle ArmingPercentTimerHandle;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ExtractionSystem")
 	//Bomb countdown timer handle
 	FTimerHandle BombCountdownTimerHandle;
+
+
+	//Percentage before the bomb is armed
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ExtractionSystem")
+		float CurrentArmingPercent = 0.0f;
+
+	//Timer before the bomb explodes
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ExtractionSystem")
+		float BombTimer = 60.0f;
 private:
 
 
-	 //Percentage before the bomb is armed
-	float CurrentArmingPercent = 0.0f;
 
-	//Timer before the bomb explodes	
-	float BombTimer = 0.0f;
 
 };

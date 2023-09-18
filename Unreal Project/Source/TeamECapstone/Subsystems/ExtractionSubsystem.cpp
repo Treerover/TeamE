@@ -78,7 +78,7 @@ void UExtractionSubsystem::StartBombCountdown()
 	bIsArming = false;
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Started Arming")));
 	//Start bomb timer
-	GetWorld()->GetTimerManager().SetTimer(BombCountdownTimerHandle, this, &UExtractionSubsystem::ExplodeBomb, 120.0f, false);
+	GetWorld()->GetTimerManager().SetTimer(BombCountdownTimerHandle, this, &UExtractionSubsystem::ExplodeBomb, BombTimer, false);
 
 	//Gets the extraction point in the level (should be one)
 	TArray<AActor*> FoundActors;
