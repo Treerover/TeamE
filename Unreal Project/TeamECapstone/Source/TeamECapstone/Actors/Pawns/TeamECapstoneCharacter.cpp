@@ -7,6 +7,8 @@
 #include "Components/CapsuleComponent.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "Boat.h"
+#include <InteractInterface.h>
 
 
 //////////////////////////////////////////////////////////////////////////
@@ -69,6 +71,9 @@ void ATeamECapstoneCharacter::SetupPlayerInputComponent(class UInputComponent* P
 
 		//Looking
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &ATeamECapstoneCharacter::Look);
+
+		//Interacting
+		EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Triggered, this, &ATeamECapstoneCharacter::Interact);
 	}
 }
 
@@ -97,6 +102,42 @@ void ATeamECapstoneCharacter::Look(const FInputActionValue& Value)
 		AddControllerYawInput(LookAxisVector.X);
 		AddControllerPitchInput(LookAxisVector.Y);
 	}
+}
+
+void ATeamECapstoneCharacter::Interact(const FInputActionValue& Value)
+{
+	// Perform the raycast
+	FHitResult HitResult;
+	FVector StartLocation = GetActorLocation();
+	//End location based off player lookat view
+	FVector EndLocation = StartLocation + (GetControlRotation().Vector() * 500.0f);
+	FCollisionQueryParams QueryParams;
+	QueryParams.AddIgnoredActor(this);
+
+	DrawDebugLine(GetWorld(), StartLocation, EndLocation, FColor::Red, false, -1.0f, 0, 2.0f);
+
+	//Find all actors of boat class
+	TArray<AActor*> FoundActors;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ABoat::StaticClass(), FoundActors);
+	//THIS IS A SHITTY WAY TO DO THIS BUT ITS JUST FOR THE DEMO. THERE WILL BE AN INTERACTABLE OBJECTS PARENT THAT WILL BE INHERITABLE FROM 
+	//Line trace
+	if (GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, EndLocation, ECC_GameTraceChannel1, QueryParams))
+	{
+		//Debug message of what hit result is
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Hit Result: %s"), *HitResult.GetActor()->GetName()));
+
+		if (FoundActors.Num() > 0)
+		{
+			//If hit result is the boat, call interact function
+			if (HitResult.GetActor() == FoundActors[0])
+			{
+				ABoat* Boat = FoundActors[0] ? Cast<ABoat>(FoundActors[0]) : nullptr;
+				Boat->Interact();
+			}
+		}
+
+	}
+
 }
 
 void ATeamECapstoneCharacter::SetHasRifle(bool bNewHasRifle)
