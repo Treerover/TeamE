@@ -4,13 +4,12 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Pawn.h"
-#include "InteractInterface.h"
 #include "Boat.generated.h"
 
 
 
 UCLASS()
-class TEAMECAPSTONE_API ABoat : public APawn, public IInteractInterface
+class TEAMECAPSTONE_API ABoat : public APawn
 {
 	GENERATED_BODY()
 
@@ -53,8 +52,6 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	    class UInputAction* UnPossessBoatAction;
 
-    UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Interactable")
-        void Interact() override;
 
     // Movement
     void MoveForward();

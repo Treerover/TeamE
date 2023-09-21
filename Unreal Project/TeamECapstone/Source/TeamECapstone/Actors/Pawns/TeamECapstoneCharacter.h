@@ -42,6 +42,14 @@ class ATeamECapstoneCharacter : public ACharacter
 	/** Interact Input Action*/
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 		class UInputAction* InteractAction;
+
+	/** Lower Cage Input Action*/
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+		class UInputAction* LowerCageAction;
+
+	/** Raise Cage Input Action*/
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+		class UInputAction* RaiseCageAction;
 	
 public:
 	ATeamECapstoneCharacter();
@@ -58,6 +66,8 @@ public:
 	/** Bool for AnimBP to switch to another animation set */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Weapon)
 	bool bHasRifle;
+
+	bool bIsInTerminal = false;
 
 	/** Setter to set the bool */
 	UFUNCTION(BlueprintCallable, Category = Weapon)
@@ -77,6 +87,12 @@ protected:
 	/** Called for interact input */
 	void Interact(const FInputActionValue& Value);
 
+	/** Called for lower cage input */
+	void LowerCage();
+
+	/** Called for raise cage input */
+	void RaiseCage();
+
 
 protected:
 	// APawn interface
@@ -89,6 +105,7 @@ public:
 	/** Returns FirstPersonCameraComponent subobject **/
 	UCameraComponent* GetFirstPersonCameraComponent() const { return FirstPersonCameraComponent; }
 
-
+	//TSubclass of cage
+	class ADiveCage* CageClass;
 };
 

@@ -55,10 +55,6 @@ void ABoat::BeginPlay()
 }
 
 
-void ABoat::Interact_Implementation()
-{
-	PossessBoat();
-}
 
 void ABoat::MoveForward()
 {
@@ -151,17 +147,31 @@ void ABoat::PossessBoat()
 	// Get the first player controller
 	APlayerController* PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
 
-	// Cast to the player pawn
-	PlayerPawn = Cast<ATeamECapstoneCharacter>(PlayerController->GetPawn());
-
 	// Ensure we have a valid player controller
 	if (PlayerController)
 	{
-		// Unpossess the current pawn
-		PlayerController->UnPossess();
+		// Cast to the player pawn
+		PlayerPawn = Cast<ATeamECapstoneCharacter>(PlayerController->GetPawn());
 
-		// Possess the boat pawn
-		PlayerController->Possess(this);
+		// Ensure we have a valid player pawn
+		if (PlayerPawn)
+		{
+			// Unpossess the current pawn
+			PlayerController->UnPossess();
+
+			// Possess the boat pawn
+			PlayerController->Possess(this);
+		}
+		else
+		{
+			// Handle the case where the player pawn is not valid (e.g., it hasn't been spawned)
+			UE_LOG(LogTemp, Error, TEXT("Player pawn is not valid"));
+		}
+	}
+	else
+	{
+		// Handle the case where the player controller is not valid
+		UE_LOG(LogTemp, Error, TEXT("Player controller is not valid"));
 	}
 
 }
@@ -174,13 +184,18 @@ void ABoat::UnPossessBoat()
 	// Ensure we have a valid player controller
 	if (PlayerController)
 	{
-		// Unpossess the current pawn
+		// Store the current location of the player pawn
+		FVector CurrentLocation = PlayerPawn->GetActorLocation();
+
+		// Unpossess the boat pawn
 		PlayerController->UnPossess();
+
+		// Possess the player pawn
+		PlayerController->Possess(PlayerPawn);
+
+		// Restore the player character's location
+		PlayerPawn->SetActorLocation(CurrentLocation);
 	}
-
-	// Possess the player pawn
-	PlayerController->Possess(PlayerPawn);
-
 }
 
 // Called to bind functionality to input

@@ -9,6 +9,9 @@
 #include "EnhancedInputSubsystems.h"
 #include "Boat.h"
 #include <InteractInterface.h>
+#include <BoatWheel.h>
+#include "PCTerminal.h"
+#include "DiveCage.h"
 
 
 //////////////////////////////////////////////////////////////////////////
@@ -53,6 +56,14 @@ void ATeamECapstoneCharacter::BeginPlay()
 		}
 	}
 
+
+
+	//Shit that shouldntbe here but its easy for right now
+	//Find all actors of cage 
+	TArray<AActor*> CageActors;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ADiveCage::StaticClass(), CageActors);
+	CageClass = CageActors[0] ? Cast<ADiveCage>(CageActors[0]) : nullptr;
+
 }
 
 //////////////////////////////////////////////////////////////////////////// Input
@@ -74,6 +85,13 @@ void ATeamECapstoneCharacter::SetupPlayerInputComponent(class UInputComponent* P
 
 		//Interacting
 		EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Triggered, this, &ATeamECapstoneCharacter::Interact);
+
+		//Lower cage
+		EnhancedInputComponent->BindAction(LowerCageAction, ETriggerEvent::Triggered, this, &ATeamECapstoneCharacter::LowerCage);
+
+		//Raise cage
+		EnhancedInputComponent->BindAction(RaiseCageAction, ETriggerEvent::Triggered, this, &ATeamECapstoneCharacter::RaiseCage);
+
 	}
 }
 
@@ -118,7 +136,11 @@ void ATeamECapstoneCharacter::Interact(const FInputActionValue& Value)
 
 	//Find all actors of boat class
 	TArray<AActor*> FoundActors;
-	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ABoat::StaticClass(), FoundActors);
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ABoatWheel::StaticClass(), FoundActors);
+
+	//Find all actors of boat class
+	TArray<AActor*> FoundActors1;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), APCTerminal::StaticClass(), FoundActors1);
 	//THIS IS A SHITTY WAY TO DO THIS BUT ITS JUST FOR THE DEMO. THERE WILL BE AN INTERACTABLE OBJECTS PARENT THAT WILL BE INHERITABLE FROM 
 	//Line trace
 	if (GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, EndLocation, ECC_GameTraceChannel1, QueryParams))
@@ -131,13 +153,37 @@ void ATeamECapstoneCharacter::Interact(const FInputActionValue& Value)
 			//If hit result is the boat, call interact function
 			if (HitResult.GetActor() == FoundActors[0])
 			{
-				ABoat* Boat = FoundActors[0] ? Cast<ABoat>(FoundActors[0]) : nullptr;
-				Boat->Interact();
+				ABoatWheel* Boat = FoundActors[0] ? Cast<ABoatWheel>(FoundActors[0]) : nullptr;
+				if (Boat)
+				{
+					Boat->Interact();
+				}
+			}
+			//If hit result is the boat, call interact function
+			if (HitResult.GetActor() == FoundActors1[0])
+			{
+				APCTerminal* PC = FoundActors1[0] ? Cast<APCTerminal>(FoundActors1[0]) : nullptr;
+				if (PC)
+				{
+					PC->Interact();
+					bIsInTerminal = true;
+				}
+				
 			}
 		}
 
 	}
 
+}
+
+void ATeamECapstoneCharacter::LowerCage()
+{
+	CageClass->LowerCage();
+}
+
+void ATeamECapstoneCharacter::RaiseCage()
+{
+	CageClass->RaiseCage();
 }
 
 void ATeamECapstoneCharacter::SetHasRifle(bool bNewHasRifle)
