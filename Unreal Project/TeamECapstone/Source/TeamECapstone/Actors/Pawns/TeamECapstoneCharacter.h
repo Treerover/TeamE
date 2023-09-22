@@ -27,6 +27,14 @@ class ATeamECapstoneCharacter : public ACharacter
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	UCameraComponent* FirstPersonCameraComponent;
 
+	/** First person photo camera */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
+	UCameraComponent* PhotoCamera;
+
+	/** Photo Camera Component */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
+	class UPhotoCameraComponent* PhotoCameraComponent;
+
 	/** MappingContext */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
 	class UInputMappingContext* DefaultMappingContext;
@@ -50,6 +58,12 @@ class ATeamECapstoneCharacter : public ACharacter
 	/** Raise Cage Input Action*/
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 		class UInputAction* RaiseCageAction;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+		class UInputAction* AimCameraAction;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+		class UInputAction* TakePhotoAction;
 	
 public:
 	ATeamECapstoneCharacter();
@@ -69,6 +83,9 @@ public:
 
 	bool bIsInTerminal = false;
 
+	UPROPERTY(Editanywhere, BlueprintReadWrite, Category = Weapon)
+	bool bIsAimingCamera = false;
+
 	/** Setter to set the bool */
 	UFUNCTION(BlueprintCallable, Category = Weapon)
 	void SetHasRifle(bool bNewHasRifle);
@@ -86,6 +103,15 @@ protected:
 
 	/** Called for interact input */
 	void Interact(const FInputActionValue& Value);
+
+	/** Called for start aiming camera input */
+	void StartAimingCamera(const FInputActionValue& Value);
+
+	/** Called for stop aiming camera input */
+	void StopAimingCamera(const FInputActionValue& Value);
+
+	/** Called for taking photo input */
+	void TakePhoto(const FInputActionValue& Value);
 
 	/** Called for lower cage input */
 	void LowerCage();

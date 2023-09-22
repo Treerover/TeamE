@@ -20,7 +20,7 @@ ADiveBot::ADiveBot()
 	SetRootComponent(CollisionBox);
 	CollisionBox->SetBoxExtent(FVector(25, 25, 25));
 	CollisionBox->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-	CollisionBox->SetCollisionProfileName("BlockAll");
+	CollisionBox->SetCollisionProfileName("NoCollision");
 	CollisionBox->SetSimulatePhysics(false);
 	//CollisionBox->SetEnableGravity(false);
 
@@ -28,7 +28,7 @@ ADiveBot::ADiveBot()
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Camera Mesh"));
 	Mesh->SetupAttachment(CollisionBox);
 	Mesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-	Mesh->SetCollisionProfileName("BlockAll");
+	Mesh->SetCollisionProfileName("NoCollision");
 
 	static ConstructorHelpers::FObjectFinder<UStaticMesh>MeshAsset(TEXT("StaticMesh'/Game/LevelPrototyping/Meshes/SM_Cube.SM_Cube'"));
 	UStaticMesh* Asset = MeshAsset.Object;
