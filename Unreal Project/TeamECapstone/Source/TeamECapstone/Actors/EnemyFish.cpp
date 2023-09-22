@@ -59,7 +59,7 @@ void AEnemyFish::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	switch (State) {
+	switch (AState) {
 	case EnemyFishState::Idle:
 		Idle(DeltaTime);
 		break;

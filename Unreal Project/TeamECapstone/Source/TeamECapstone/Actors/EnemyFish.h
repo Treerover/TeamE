@@ -6,7 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "EnemyFish.generated.h"
 
-
+UENUM(BlueprintType)
 enum class EnemyFishState
 {
 	Idle,
@@ -47,7 +47,7 @@ protected:
 		FVector DiverLocation;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Enemy_Fish")
-		EnemyFishState State;
+		EnemyFishState AState;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Enemy_Fish")
 		float MoveSpeed;
@@ -95,12 +95,12 @@ public:
 
 	void SetupDiverReference();
 
-	FORCEINLINE void SetStatePatrol() { State = EnemyFishState::Patrolling; };
-	FORCEINLINE void SetStateIdle() { State = EnemyFishState::Idle; };
-	FORCEINLINE void SetStateFlee() { State = EnemyFishState::Flee; };
-	FORCEINLINE void SetStateAttack() { State = EnemyFishState::Sleep; };
-	FORCEINLINE void SetStateFeed() { State = EnemyFishState::Feed; };
-	FORCEINLINE void SetStateSleep() { State = EnemyFishState::Attack; };
-	FORCEINLINE void SetStateSleep() { State = EnemyFishState::Hide; };
+	FORCEINLINE void SetStatePatrol() { AState = EnemyFishState::Patrolling; };
+	FORCEINLINE void SetStateIdle() { AState = EnemyFishState::Idle; };
+	FORCEINLINE void SetStateFlee() { AState = EnemyFishState::Flee; };
+	FORCEINLINE void SetStateAttack() { AState = EnemyFishState::Sleep; };
+	FORCEINLINE void SetStateFeed() { AState = EnemyFishState::Feed; };
+	FORCEINLINE void SetStateSleep() { AState = EnemyFishState::Attack; };
+	FORCEINLINE void SetStateSleep() { AState = EnemyFishState::Hide; };
 
 };
