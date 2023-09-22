@@ -78,6 +78,8 @@ public:
 
 	void SetupDiverReference();
 
+	void UpdateDiverLocation();
+
 	FORCEINLINE void SetStatePatrol() { State = FriendlyFishState::Patrolling; };
 	FORCEINLINE void SetStateIdle() { State = FriendlyFishState::Idle; };
 	FORCEINLINE void SetStateFlee() { State = FriendlyFishState::Flee; };

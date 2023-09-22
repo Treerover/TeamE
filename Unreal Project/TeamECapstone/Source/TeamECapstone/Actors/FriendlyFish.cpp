@@ -36,10 +36,10 @@ AFriendlyFish::AFriendlyFish()
 
 	SetStateIdle();
 	
-	MoveSpeed = 1.0f;
+	MoveSpeed = 0.2f;
 	RotateSpeed = 6.0f;
 	ObliviousDistance = 1000.0f;
-	FleeDistance = 3000.0f;
+	FleeDistance = 5000.0f;
 	IdleTime = 0.1f;
 }
 
@@ -56,6 +56,8 @@ void AFriendlyFish::BeginPlay()
 void AFriendlyFish::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	UpdateDiverLocation();
 
 	switch (State) {
 	case FriendlyFishState::Idle:
@@ -116,9 +118,9 @@ void AFriendlyFish::SwimAway(float DeltaTime)
 	FVector newPos = FVector(0, 0, 0);
 	FVector fishLocation = GetActorLocation();
 
-	FVector directionAwayFromDiver = (DiverLocation - fishLocation).GetSafeNormal();
+	FVector directionAwayFromDiver = (fishLocation - DiverLocation).GetSafeNormal();
 
-	newPos += FMath::Lerp(fishLocation, DiverLocation + directionAwayFromDiver * 300, MoveSpeed * DeltaTime);
+	newPos += FMath::Lerp(fishLocation, DiverLocation + directionAwayFromDiver * FleeDistance, MoveSpeed * DeltaTime);
 	SetActorLocation(newPos);
 
 	// Rotates towards next waypoint
@@ -126,7 +128,7 @@ void AFriendlyFish::SwimAway(float DeltaTime)
 
 	SetActorRotation(newRot);
 
-	if ((fishLocation - DiverLocation).Length() < FleeDistance)
+	if ((fishLocation - DiverLocation).Length() > FleeDistance)
 	{
 		SetStateIdle();
 		return;
@@ -144,5 +146,15 @@ void AFriendlyFish::SetupDiverReference()
 	if (DiverReference)
 	{
 		DiverLocation = DiverReference->GetActorLocation();
+	}
+}
+
+void AFriendlyFish::UpdateDiverLocation()
+{
+	// Update the divers location.
+	if (DiverReference)
+	{
+		DiverLocation = DiverReference->GetActorLocation();
+
 	}
 }
