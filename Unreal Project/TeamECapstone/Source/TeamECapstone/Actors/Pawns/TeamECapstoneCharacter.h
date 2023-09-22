@@ -107,5 +107,20 @@ public:
 
 	//TSubclass of cage
 	class ADiveCage* CageClass;
+
+	//Movement stuff
+protected:
+
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Movement)
+		bool bIsSwiming = false;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Movement)
+		float SwimSpeed = 10;
+
+public:
+
+	void TrasitionMovementStates();
+	
 };
 

@@ -95,6 +95,26 @@ void ATeamECapstoneCharacter::SetupPlayerInputComponent(class UInputComponent* P
 	}
 }
 
+void ATeamECapstoneCharacter::TrasitionMovementStates()
+{
+	bIsSwiming = !bIsSwiming;
+
+	switch (bIsSwiming)
+	{
+	case true:
+		GetCharacterMovement()->GravityScale = 0;
+		GetMovementComponent()->ConsumeInputVector();
+		break;
+	case false:
+		GetCharacterMovement()->GravityScale = 1;
+		break;
+	}
+
+	//Stuff to add:
+	//Switch animation
+	//Enable Actions
+}
+
 
 void ATeamECapstoneCharacter::Move(const FInputActionValue& Value)
 {
@@ -103,9 +123,16 @@ void ATeamECapstoneCharacter::Move(const FInputActionValue& Value)
 
 	if (Controller != nullptr)
 	{
-		// add movement 
-		AddMovementInput(GetActorForwardVector(), MovementVector.Y);
-		AddMovementInput(GetActorRightVector(), MovementVector.X);
+		if (!bIsSwiming)
+		{
+			// add movement 
+			AddMovementInput(GetActorForwardVector(), MovementVector.Y);
+			AddMovementInput(GetActorRightVector(), MovementVector.X);
+		}
+		else
+		{
+
+		}
 	}
 }
 
