@@ -28,6 +28,7 @@ public:
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Boat")
         class UStaticMeshComponent* BoatMesh;
 
+
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Boat")
 		class UBoxComponent* BoxCollision;
 
@@ -73,6 +74,12 @@ public:
     bool bIsAccelerating = false;
     bool bIsDecelerating = false;
     bool bMoving = false;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Boat")
+    bool bIsPossessed = false;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Boat")
+        FVector SavedBoatLocation;
 
     //Player pawn data
     class ATeamECapstoneCharacter* PlayerPawn;

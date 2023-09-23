@@ -10,6 +10,7 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "TeamECapstoneCharacter.h"
+#include <BoatWheel.h>
 
 
 // Sets default values
@@ -20,9 +21,10 @@ ABoat::ABoat()
 
 	//Mesh 
 	BoatMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BoatMesh"));
-	RootComponent = BoatMesh;
+	BoatMesh->SetupAttachment(RootComponent);
 	BoatMesh->SetCollisionProfileName(TEXT("Pawn"));
 	BoatMesh->SetSimulatePhysics(true);
+	BoatMesh->SetWorldRotation(FRotator(0.0f, 0.0f, 90.0f));
 
 	// Create and attach the spring arm
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
@@ -138,6 +140,14 @@ void ABoat::Tick(float DeltaTime)
 		Decelerate();
 	}
 
+
+
+	if (bIsPossessed == true)
+	{
+		//Simulate physics
+		BoatMesh->SetSimulatePhysics(true);
+	}
+
 }
 
 
@@ -146,6 +156,7 @@ void ABoat::PossessBoat()
 {
 	// Get the first player controller
 	APlayerController* PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+	bIsPossessed = true;
 
 	// Ensure we have a valid player controller
 	if (PlayerController)
@@ -178,14 +189,13 @@ void ABoat::PossessBoat()
 
 void ABoat::UnPossessBoat()
 {
+	bIsPossessed = false;
 	// Get the first player controller
 	APlayerController* PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
 
 	// Ensure we have a valid player controller
 	if (PlayerController)
 	{
-		// Store the current location of the player pawn
-		FVector CurrentLocation = PlayerPawn->GetActorLocation();
 
 		// Unpossess the boat pawn
 		PlayerController->UnPossess();
@@ -193,9 +203,21 @@ void ABoat::UnPossessBoat()
 		// Possess the player pawn
 		PlayerController->Possess(PlayerPawn);
 
-		// Restore the player character's location
-		PlayerPawn->SetActorLocation(CurrentLocation);
 	}
+
+	//Cast to boat wheel
+	//If hit result is the boat, call interact function
+	//Find all actors of boat class
+	TArray<AActor*> FoundActors;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ABoatWheel::StaticClass(), FoundActors);
+
+	ABoatWheel* BoatWheel = FoundActors[0] ? Cast<ABoatWheel>(FoundActors[0]) : nullptr;
+		if (BoatWheel)
+		{
+			BoatWheel->bIsPossessing = false;
+		}
+
+
 }
 
 // Called to bind functionality to input

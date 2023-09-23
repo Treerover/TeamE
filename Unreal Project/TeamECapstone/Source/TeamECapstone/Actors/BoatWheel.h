@@ -40,7 +40,9 @@ public:
 	//Player controller
 	class ATeamECapstoneCharacter* PlayerPawn;
 
+	bool bIsPossessing = false;
+
 private:
 	//FVector offset
-	FVector Offset = FVector(180, 0, 180);
+	FVector Offset = FVector(-50, 0, 0);
 };
