@@ -20,13 +20,15 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera")
 		class UStaticMeshComponent* CameraMesh;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera")
+		class USceneCaptureComponent2D* CaptureComponent;
+
 	// Function to capture and process the photo
 	UFUNCTION(BlueprintCallable, Category = "Camera")
 		void CapturePhoto();
 
-// Function to save the photo to the picture slots
-	UFUNCTION(BlueprintCallable, Category = "Camera")
-		void SavePhoto(UTextureRenderTarget2D* Photo);
+	
+
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
@@ -36,8 +38,11 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	UPROPERTY(Editanywhere, BlueprintReadWrite)
-	TArray<UTextureRenderTarget2D*> PictureSlots;
+	TArray<UTexture2D*> PictureSlots;
 
 	UPROPERTY(Editanywhere, BlueprintReadWrite)
 	int32 MaxPictureSlots = 20;
+
+	UPROPERTY(Editanywhere, BlueprintReadWrite)
+		int SlotIndex = 0;
 };

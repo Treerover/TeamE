@@ -39,8 +39,8 @@ ATeamECapstoneCharacter::ATeamECapstoneCharacter()
 	PhotoCamera->bUsePawnControlRotation = true;
 	PhotoCamera->SetFieldOfView(30.f);
 
-	// Photo camera component
-	PhotoCameraComponent = CreateDefaultSubobject<UPhotoCameraComponent>(TEXT("PhotoCameraComponent"));
+	//// Photo camera component
+	//PhotoCameraComponent = CreateDefaultSubobject<UPhotoCameraComponent>(TEXT("PhotoCameraComponent"));
 
 
 
@@ -203,7 +203,7 @@ void ATeamECapstoneCharacter::Interact(const FInputActionValue& Value)
 
 void ATeamECapstoneCharacter::StartAimingCamera(const FInputActionValue& Value)
 {
-	//Take control of photo camera	
+	////Take control of photo camera	
 	FirstPersonCameraComponent->Deactivate();
 	PhotoCamera->Activate();
 	bIsAimingCamera = true;
@@ -211,7 +211,7 @@ void ATeamECapstoneCharacter::StartAimingCamera(const FInputActionValue& Value)
 
 void ATeamECapstoneCharacter::StopAimingCamera(const FInputActionValue& Value)
 {
-	//Give control back to player
+	////Give control back to player
 	FirstPersonCameraComponent->Activate();
 	PhotoCamera->Deactivate();
 	bIsAimingCamera = false;
@@ -222,7 +222,7 @@ void ATeamECapstoneCharacter::TakePhoto(const FInputActionValue& Value)
 //Take photo
 	if (bIsAimingCamera)
 	{
-		PhotoCameraComponent->CapturePhoto();
+		/*PhotoCameraComponent->CapturePhoto();*/
 	}
 }
 
