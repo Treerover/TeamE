@@ -15,7 +15,7 @@ AMovmentStateTrigger::AMovmentStateTrigger()
 	CollisionBox->SetCollisionProfileName("OverlapAllDynamic");
 	CollisionBox->SetGenerateOverlapEvents(true);
 	CollisionBox->OnComponentBeginOverlap.AddDynamic(this, &AMovmentStateTrigger::OnOverlapBegin);
-	CollisionBox->OnComponentEndOverlap.AddDynamic(this, &AMovmentStateTrigger::OnOverlapBegin);
+	CollisionBox->OnComponentEndOverlap.AddDynamic(this, &AMovmentStateTrigger::OnOverlapEnd);
 
 }
 
@@ -35,7 +35,6 @@ void AMovmentStateTrigger::Tick(float DeltaTime)
 
 void AMovmentStateTrigger::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	// On enter turn on water
 	ATeamECapstoneCharacter* player = Cast<ATeamECapstoneCharacter>(OtherActor);
 
 	if (player)
@@ -46,7 +45,6 @@ void AMovmentStateTrigger::OnOverlapBegin(UPrimitiveComponent* OverlappedCompone
 
 void AMovmentStateTrigger::OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
-	//On exit turn off water
 	ATeamECapstoneCharacter* player = Cast<ATeamECapstoneCharacter>(OtherActor);
 
 	if (player)

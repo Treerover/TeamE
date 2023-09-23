@@ -79,6 +79,7 @@ void ATeamECapstoneCharacter::SetupPlayerInputComponent(class UInputComponent* P
 
 		//Moving
 		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ATeamECapstoneCharacter::Move);
+		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Completed, this, &ATeamECapstoneCharacter::StopMove);
 
 		//Looking
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &ATeamECapstoneCharacter::Look);
@@ -95,30 +96,35 @@ void ATeamECapstoneCharacter::SetupPlayerInputComponent(class UInputComponent* P
 	}
 }
 
+void ATeamECapstoneCharacter::TurnOffWaterWait()
+{
+	bJustEnteredWater = false;
+	GetCharacterMovement()->Velocity = FVector::ZeroVector;
+}
+
 void ATeamECapstoneCharacter::TrasitionMovementStates()
 {
 	bIsSwiming = !bIsSwiming;
-
-	switch (bIsSwiming)
+	
+	if (bIsSwiming)
 	{
-	case true:
 		GetCharacterMovement()->GravityScale = 0;
-		GetMovementComponent()->ConsumeInputVector();
-		break;
-	case false:
-		GetCharacterMovement()->GravityScale = 1;
-		break;
+		GetWorld()->GetTimerManager().SetTimer(WaterTimer, this, &ATeamECapstoneCharacter::TurnOffWaterWait, 1.7, false);
+		bJustEnteredWater = true;
 	}
-
-	//Stuff to add:
-	//Switch animation
-	//Enable Actions
+	else
+	{
+		GetCharacterMovement()->GravityScale = 1;
+	}
 }
 
 
 void ATeamECapstoneCharacter::Move(const FInputActionValue& Value)
 {
+	bIsMoving = true;
+
 	// input is a Vector2D
+
 	FVector2D MovementVector = Value.Get<FVector2D>();
 
 	if (Controller != nullptr)
@@ -131,9 +137,32 @@ void ATeamECapstoneCharacter::Move(const FInputActionValue& Value)
 		}
 		else
 		{
+			FVector ForwardVelo;
+			FVector NewTargetVelocity;
 
+			FVector RightVelo = GetActorRightVector() * 400 * MovementVector.X;
+
+			if (!bJustEnteredWater)
+			{
+				ForwardVelo = FirstPersonCameraComponent->GetForwardVector() * 400 * MovementVector.Y;
+				NewTargetVelocity = ForwardVelo + RightVelo;
+			}
+			else
+			{
+				ForwardVelo = GetActorForwardVector() * 400 * MovementVector.Y;
+				NewTargetVelocity = ForwardVelo + RightVelo;
+				NewTargetVelocity.Z = GetCharacterMovement()->Velocity.Z;
+			}
+
+
+			GetCharacterMovement()->Velocity = FMath::Lerp(GetCharacterMovement()->Velocity, NewTargetVelocity, 0.8);
 		}
 	}
+}
+
+void ATeamECapstoneCharacter::StopMove(const FInputActionValue& Value)
+{
+	bIsMoving = false;
 }
 
 void ATeamECapstoneCharacter::Look(const FInputActionValue& Value)
@@ -211,6 +240,28 @@ void ATeamECapstoneCharacter::LowerCage()
 void ATeamECapstoneCharacter::RaiseCage()
 {
 	CageClass->RaiseCage();
+}
+
+void ATeamECapstoneCharacter::Tick(float delta)
+{
+	Super::Tick(delta);
+
+	if (!bIsMoving && bIsSwiming)
+	{
+		FVector NewVelocity = GetCharacterMovement()->Velocity - ((GetCharacterMovement()->Velocity / 1.2) * delta);
+
+		NewVelocity.Z = GetCharacterMovement()->Velocity.Z;
+
+		GetCharacterMovement()->Velocity = NewVelocity;
+	}
+
+	if (!bIsMovingZ && bIsSwiming)
+	{
+		double NewZVelocity = GetCharacterMovement()->Velocity.Z - ((GetCharacterMovement()->Velocity / 1.2) * delta).Z;
+
+		GetCharacterMovement()->Velocity.Z = NewZVelocity;
+	}
+
 }
 
 void ATeamECapstoneCharacter::SetHasRifle(bool bNewHasRifle)

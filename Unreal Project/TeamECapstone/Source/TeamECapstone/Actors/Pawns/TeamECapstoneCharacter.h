@@ -80,6 +80,7 @@ public:
 protected:
 	/** Called for movement input */
 	void Move(const FInputActionValue& Value);
+	void StopMove(const FInputActionValue& Value);
 
 	/** Called for looking input */
 	void Look(const FInputActionValue& Value);
@@ -93,6 +94,7 @@ protected:
 	/** Called for raise cage input */
 	void RaiseCage();
 
+	virtual void Tick(float delta) override;
 
 protected:
 	// APawn interface
@@ -108,19 +110,28 @@ public:
 	//TSubclass of cage
 	class ADiveCage* CageClass;
 
-	//Movement stuff
+	//Movement stuff --------------------
 protected:
 
-
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Movement)
-		bool bIsSwiming = false;
+		bool bIsSwiming = false, bJustEnteredWater, bIsMoving = false, bIsMovingZ = false;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Movement)
 		float SwimSpeed = 10;
 
+	FTimerHandle WaterTimer;
+
+	/// <summary>
+	/// Used to manage the "bJustEnteredWaterBool" used to force the player to dip into the water before allowing them to control the z axis
+	/// </summary>
+	void TurnOffWaterWait();
+
 public:
 
+	/// <summary>
+	/// Called when the player enters/exits water, allows players to change between swiming and walking states
+	/// </summary>
 	void TrasitionMovementStates();
-	
+
 };
 
