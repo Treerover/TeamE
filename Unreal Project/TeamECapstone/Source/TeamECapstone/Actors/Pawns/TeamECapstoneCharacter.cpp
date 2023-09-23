@@ -12,6 +12,7 @@
 #include <BoatWheel.h>
 #include "PCTerminal.h"
 #include "DiveCage.h"
+#include <PhotoCameraComponent.h>
 
 
 //////////////////////////////////////////////////////////////////////////
@@ -30,6 +31,18 @@ ATeamECapstoneCharacter::ATeamECapstoneCharacter()
 	FirstPersonCameraComponent->SetupAttachment(GetCapsuleComponent());
 	FirstPersonCameraComponent->SetRelativeLocation(FVector(-10.f, 0.f, 60.f)); // Position the camera
 	FirstPersonCameraComponent->bUsePawnControlRotation = true;
+
+	// Create photo camera component
+	PhotoCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("PhotoCamera"));
+	PhotoCamera->SetupAttachment(GetCapsuleComponent());
+	PhotoCamera->SetRelativeLocation(FVector(100.f, 0.f, 60.f)); // Position the camera
+	PhotoCamera->bUsePawnControlRotation = true;
+	PhotoCamera->SetFieldOfView(30.f);
+
+	//// Photo camera component
+	//PhotoCameraComponent = CreateDefaultSubobject<UPhotoCameraComponent>(TEXT("PhotoCameraComponent"));
+
+
 
 	// Create a mesh component that will be used when being viewed from a '1st person' view (when controlling this pawn)
 	Mesh1P = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("CharacterMesh1P"));
@@ -91,6 +104,18 @@ void ATeamECapstoneCharacter::SetupPlayerInputComponent(class UInputComponent* P
 
 		//Raise cage
 		EnhancedInputComponent->BindAction(RaiseCageAction, ETriggerEvent::Triggered, this, &ATeamECapstoneCharacter::RaiseCage);
+
+		//Take photo
+		EnhancedInputComponent->BindAction(TakePhotoAction, ETriggerEvent::Triggered, this, &ATeamECapstoneCharacter::TakePhoto);
+
+		//Aim camera
+		EnhancedInputComponent->BindAction(AimCameraAction, ETriggerEvent::Triggered, this, &ATeamECapstoneCharacter::StartAimingCamera);
+
+		//Stop aiming
+		EnhancedInputComponent->BindAction(AimCameraAction, ETriggerEvent::Completed, this, &ATeamECapstoneCharacter::StopAimingCamera);
+
+
+
 
 	}
 }
@@ -175,6 +200,32 @@ void ATeamECapstoneCharacter::Interact(const FInputActionValue& Value)
 	}
 
 }
+
+void ATeamECapstoneCharacter::StartAimingCamera(const FInputActionValue& Value)
+{
+	////Take control of photo camera	
+	FirstPersonCameraComponent->Deactivate();
+	PhotoCamera->Activate();
+	bIsAimingCamera = true;
+}
+
+void ATeamECapstoneCharacter::StopAimingCamera(const FInputActionValue& Value)
+{
+	////Give control back to player
+	FirstPersonCameraComponent->Activate();
+	PhotoCamera->Deactivate();
+	bIsAimingCamera = false;
+}
+
+void ATeamECapstoneCharacter::TakePhoto(const FInputActionValue& Value)
+{
+//Take photo
+	if (bIsAimingCamera)
+	{
+		/*PhotoCameraComponent->CapturePhoto();*/
+	}
+}
+
 
 void ATeamECapstoneCharacter::LowerCage()
 {
