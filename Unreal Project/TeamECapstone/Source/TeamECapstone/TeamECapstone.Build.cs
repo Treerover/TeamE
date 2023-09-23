@@ -19,6 +19,7 @@ public class TeamECapstone : ModuleRules
             "TeamECapstone/Actors/Abilities",
             "TeamECapstone/Actors/Pawns",
             "TeamECapstone/Actors/Weapons",
+            "TeamECapstone/Actors/QuestSystem",
             "TeamECapstone",
         });
 
