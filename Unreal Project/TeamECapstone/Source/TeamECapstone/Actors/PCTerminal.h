@@ -24,9 +24,14 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Collision")
 		class UBoxComponent* CollisionBox;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "bool")
+		bool bIsInPc;
+
+
 	// Called when the player interacts with this object
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Interactable")
 		void Interact() override;
+
 
 
 protected:

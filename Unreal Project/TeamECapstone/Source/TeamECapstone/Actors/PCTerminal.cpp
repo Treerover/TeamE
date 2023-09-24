@@ -13,7 +13,7 @@ APCTerminal::APCTerminal()
 	RootComponent = Mesh;
 	Mesh->SetCollisionProfileName(TEXT("BlockAllDynamic"));
 
-
+	bIsInPc = false;
 
 	Tags.Add("Interactable");
 }
@@ -32,9 +32,9 @@ void APCTerminal::Tick(float DeltaTime)
 
 }
 
-
 void APCTerminal::Interact_Implementation()
 {
 	UE_LOG(LogTemp, Warning, TEXT("Interacted with PC Terminal"));
 
 }
+

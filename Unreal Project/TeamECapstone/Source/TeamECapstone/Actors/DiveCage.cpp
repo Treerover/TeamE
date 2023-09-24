@@ -31,6 +31,7 @@ void ADiveCage::BeginPlay()
 
 void ADiveCage::LowerCage()
 {
+
 	SetActorLocation(GetActorLocation() + FVector(0, 0, -3));
 
 }
