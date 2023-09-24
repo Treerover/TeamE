@@ -81,9 +81,6 @@ void ABoat::MoveForward()
 	// Scale the input value by the movement speed
 	FVector ForwardVector = GetActorForwardVector();
 
-	// Output current speed as debug msg
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Current Speed: %f"), CurrentSpeed));
-
 	// Move the boat
 	AddActorWorldOffset(-ForwardVector * CurrentSpeed * GetWorld()->GetDeltaSeconds() * MovementSpeed, true);
 }
@@ -109,8 +106,6 @@ void ABoat::Decelerate()
 		// Move the boat
 		AddActorWorldOffset(-ForwardVector * CurrentSpeed * GetWorld()->GetDeltaSeconds() * MovementSpeed, true);
 
-		// Output current speed as debug msg
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Current Speed: %f"), CurrentSpeed));
 	}
 }
 
@@ -147,6 +142,11 @@ void ABoat::Tick(float DeltaTime)
 	{
 		//Simulate physics
 		BoatMesh->SetSimulatePhysics(true);
+	}
+	else
+	{
+		//Stop simulating physics
+		BoatMesh->SetSimulatePhysics(false);
 	}
 
 }
