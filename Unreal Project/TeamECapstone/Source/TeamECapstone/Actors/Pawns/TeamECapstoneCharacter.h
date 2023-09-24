@@ -115,9 +115,11 @@ protected:
 	void TakePhoto(const FInputActionValue& Value);
 
 	/** Called for lower cage input */
+	UFUNCTION(BlueprintCallable, Category = Cage)
 	void LowerCage();
 
 	/** Called for raise cage input */
+	UFUNCTION(BlueprintCallable, Category = Cage)
 	void RaiseCage();
 
 	void Jump();

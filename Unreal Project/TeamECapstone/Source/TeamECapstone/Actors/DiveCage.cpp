@@ -25,7 +25,14 @@ ADiveCage::ADiveCage()
 	TriggerBox->SetGenerateOverlapEvents(true);
 	TriggerBox->OnComponentBeginOverlap.AddDynamic(this, &ADiveCage::OnOverlapBegin);
 	TriggerBox->OnComponentEndOverlap.AddDynamic(this, &ADiveCage::OnOverlapEnd);
+	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("Spring Arm"));
+	SpringArm->SetupAttachment(Mesh);
+	SpringArm->TargetArmLength = -700.0f;
+	SpringArm->AddLocalRotation(FRotator(30, 0, 0));
+	SpringArm->bDoCollisionTest = false;
+	
 
+	Tags.Add("DiveCage");
 }
 
 // Called when the game starts or when spawned
@@ -38,6 +45,7 @@ void ADiveCage::BeginPlay()
 
 void ADiveCage::LowerCage()
 {
+
 	SetActorLocation(GetActorLocation() + FVector(0, 0, -3));
 	if (Player)
 		Player->SetActorLocation(Player->GetActorLocation() + FVector(0, 0, -3));

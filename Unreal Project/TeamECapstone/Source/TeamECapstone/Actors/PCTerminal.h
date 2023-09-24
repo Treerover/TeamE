@@ -5,7 +5,10 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "InteractInterface.h"
+#include "GameFramework/SpringArmComponent.h"
+#include "Kismet/GameplayStatics.h"
 #include "PCTerminal.generated.h"
+
 
 UCLASS()
 class TEAMECAPSTONE_API APCTerminal : public AActor, public IInteractInterface
@@ -24,10 +27,17 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Collision")
 		class UBoxComponent* CollisionBox;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "bool")
+		bool bIsInPc;
+
+	
+
 	// Called when the player interacts with this object
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Interactable")
 		void Interact() override;
 
+	UFUNCTION(BlueprintCallable, category = "Camera Spawner")
+		void SpawnCamera();
 
 protected:
 	// Called when the game starts or when spawned
