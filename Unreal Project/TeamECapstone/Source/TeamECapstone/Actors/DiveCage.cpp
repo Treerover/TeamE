@@ -18,7 +18,14 @@ ADiveCage::ADiveCage()
 	CollisionBox->SetupAttachment(Mesh);
 	CollisionBox->SetCollisionProfileName(TEXT("BlockAllDynamic"));
 
+	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("Spring Arm"));
+	SpringArm->SetupAttachment(Mesh);
+	SpringArm->TargetArmLength = -700.0f;
+	SpringArm->AddLocalRotation(FRotator(30, 0, 0));
+	SpringArm->bDoCollisionTest = false;
+	
 
+	Tags.Add("DiveCage");
 }
 
 // Called when the game starts or when spawned

@@ -13,7 +13,11 @@ APCTerminal::APCTerminal()
 	RootComponent = Mesh;
 	Mesh->SetCollisionProfileName(TEXT("BlockAllDynamic"));
 
+	
+	
+
 	bIsInPc = false;
+
 
 	Tags.Add("Interactable");
 }
@@ -23,6 +27,8 @@ void APCTerminal::BeginPlay()
 {
 	Super::BeginPlay();
 	
+
+	SpawnCamera();
 }
 
 // Called every frame
@@ -38,3 +44,28 @@ void APCTerminal::Interact_Implementation()
 
 }
 
+void APCTerminal::SpawnCamera()
+{
+	FActorSpawnParameters spawnparams;
+	ACameraActor* cam;
+	
+	TArray<AActor*> ActorsToFind;
+	USpringArmComponent* divecagearm;
+
+	cam = GetWorld()->SpawnActor<ACameraActor>(FVector(100.0f, 1000.0f, 150.0f), FRotator(0,180,0), spawnparams);
+	cam->Tags.Add("TerminalCam");
+
+	cam = GetWorld()->SpawnActor<ACameraActor>(FVector(-8000.0f, 1000.0f, 150.0f), FRotator(0, 0, 0), spawnparams);
+	cam->Tags.Add("TerminalCam");
+
+	cam = GetWorld()->SpawnActor<ACameraActor>(FVector(0, 0, 0), FRotator(0, 180, 0), spawnparams);
+	cam->Tags.Add("DiveCam");
+
+	
+
+	UGameplayStatics::GetAllActorsWithTag(GetWorld(), "DiveCage", ActorsToFind);
+	divecagearm = ActorsToFind[0]->GetComponentByClass<USpringArmComponent>();
+	//divecagearm->AttachToComponent(ActorsToFind[0]->GetRootComponent(), FAttachmentTransformRules::KeepRelativeTransform);
+
+	cam->AttachToComponent(divecagearm, FAttachmentTransformRules::KeepRelativeTransform);
+}

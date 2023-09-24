@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "GameFramework/SpringArmComponent.h"
 #include "DiveCage.generated.h"
 
 UCLASS()
@@ -23,7 +24,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Collision")
 		class UBoxComponent* CollisionBox;
 
-
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spring Arm")
+		class USpringArmComponent* SpringArm;
 
 protected:
 	// Called when the game starts or when spawned
