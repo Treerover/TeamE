@@ -17,8 +17,8 @@ UFoidSpawnerComponent::UFoidSpawnerComponent()
 	MySwarm = CreateDefaultSubobject<AFishSwarm>(TEXT("Swarm"));
 	
 
-	NumberToSpawnAtStart = 10.0f;
-	SpawnRadius = 400.0f;
+	NumberToSpawnAtStart = 10;
+	SpawnRadius = 400;
 }
 
 

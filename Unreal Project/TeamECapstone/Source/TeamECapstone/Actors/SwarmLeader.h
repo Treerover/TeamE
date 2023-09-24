@@ -15,11 +15,14 @@ public:
 	// Sets default values for this actor's properties
 	ASwarmLeader();
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "1_SwarmLeader_Specs")
-	class USceneComponent* SpawnLocation;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "1_Spawner_Specs")
+	class TSubclassOf<AFoid> foidTemplate;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "1_SwarmLeader_Specs")
-	class UFoidSpawnerComponent* SpawningComponent;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "1_Spawner_Specs")
+	int NumberToSpawnAtStart;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "1_Spawner_Specs")
+	int SpawnRadius;
 
 protected:
 	// Called when the game starts or when spawned
