@@ -3,6 +3,7 @@
 
 #include "Actors/DiveCage.h"
 #include "Components/BoxComponent.h"
+#include "TeamECapstoneCharacter.h"
 
 // Sets default values
 ADiveCage::ADiveCage()
@@ -18,6 +19,12 @@ ADiveCage::ADiveCage()
 	CollisionBox->SetupAttachment(Mesh);
 	CollisionBox->SetCollisionProfileName(TEXT("BlockAllDynamic"));
 
+	TriggerBox = CreateDefaultSubobject <UBoxComponent>(TEXT("Trigger Box"));
+	TriggerBox->SetupAttachment(Mesh);
+	TriggerBox->SetCollisionProfileName("OverlapAllDynamic");
+	TriggerBox->SetGenerateOverlapEvents(true);
+	TriggerBox->OnComponentBeginOverlap.AddDynamic(this, &ADiveCage::OnOverlapBegin);
+	TriggerBox->OnComponentEndOverlap.AddDynamic(this, &ADiveCage::OnOverlapEnd);
 
 }
 
@@ -25,14 +32,15 @@ ADiveCage::ADiveCage()
 void ADiveCage::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
 	OriginalLocation = GetActorLocation();
 }
 
 void ADiveCage::LowerCage()
 {
 	SetActorLocation(GetActorLocation() + FVector(0, 0, -3));
-
+	if (Player)
+		Player->SetActorLocation(Player->GetActorLocation() + FVector(0, 0, -3));
 }
 
 void ADiveCage::RaiseCage()
@@ -40,6 +48,25 @@ void ADiveCage::RaiseCage()
 	if (GetActorLocation().Z < OriginalLocation.Z)
 	{
 		SetActorLocation(GetActorLocation() + FVector(0, 0, 3));
+		if (Player)
+			Player->SetActorLocation(Player->GetActorLocation() + FVector(0, 0, 3));
+	}
+}
+
+void ADiveCage::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	ATeamECapstoneCharacter* p = Cast<ATeamECapstoneCharacter>(OtherActor);
+	if (p)
+	{
+		Player = p;
+	}
+}
+
+void ADiveCage::OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+{
+	if (Player == OtherActor)
+	{
+		Player = nullptr;
 	}
 }
 

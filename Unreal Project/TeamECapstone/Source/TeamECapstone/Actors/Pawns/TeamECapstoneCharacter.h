@@ -94,6 +94,9 @@ protected:
 	/** Called for raise cage input */
 	void RaiseCage();
 
+	void Jump();
+	void EndJump();
+
 	virtual void Tick(float delta) override;
 
 protected:
@@ -109,6 +112,8 @@ public:
 
 	//TSubclass of cage
 	class ADiveCage* CageClass;
+
+	void PossesPlayer();
 
 	//Movement stuff --------------------
 protected:
@@ -133,5 +138,25 @@ public:
 	/// </summary>
 	void TrasitionMovementStates();
 
+
+	// Stress And Health ---------------------
+
+	protected:
+		//Defaults
+		UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Health)
+			int MaxHealthStates = 4;
+
+		float StressPrecentage = 0;
+		int CurrentHelthState = MaxHealthStates;
+
+		//Increase Rates
+		UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Movement)
+			float StressIncreaseRate = 0.5; // Per SetTime
+		UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Movement)
+			float TimeToApplyStress = 4; // Time Player needs to be underwater to applay stress
+
+		void IncreaseStress();
+
+		FTimerHandle StressHandle;
 };
 

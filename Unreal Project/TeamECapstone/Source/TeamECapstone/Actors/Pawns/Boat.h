@@ -32,6 +32,9 @@ public:
 		class UBoxComponent* BoxCollision;
 
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Boat")
+        class USceneComponent* PlayerDrivingPoint; // used to set player location in a safe spot after unpossesing the boat
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Boat")
         class USpringArmComponent* SpringArm;
 
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Boat")
@@ -51,6 +54,8 @@ public:
 
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	    class UInputAction* UnPossessBoatAction;
+
+    class ABoatWheel* MyWheel = nullptr;
 
 
     // Movement

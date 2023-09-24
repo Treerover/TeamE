@@ -12,6 +12,7 @@
 #include <BoatWheel.h>
 #include "PCTerminal.h"
 #include "DiveCage.h"
+#include "DiveBot.h"
 
 
 //////////////////////////////////////////////////////////////////////////
@@ -74,8 +75,8 @@ void ATeamECapstoneCharacter::SetupPlayerInputComponent(class UInputComponent* P
 	if (UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(PlayerInputComponent))
 	{
 		//Jumping
-		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &ACharacter::Jump);
-		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
+		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &ATeamECapstoneCharacter::Jump);
+		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ATeamECapstoneCharacter::EndJump);
 
 		//Moving
 		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ATeamECapstoneCharacter::Move);
@@ -93,6 +94,23 @@ void ATeamECapstoneCharacter::SetupPlayerInputComponent(class UInputComponent* P
 		//Raise cage
 		EnhancedInputComponent->BindAction(RaiseCageAction, ETriggerEvent::Triggered, this, &ATeamECapstoneCharacter::RaiseCage);
 
+	}
+}
+
+void ATeamECapstoneCharacter::PossesPlayer()
+{
+	// Get the first player controller
+	APlayerController* PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+
+	// Ensure we have a valid player controller
+	if (PlayerController)
+	{
+		PlayerController->Possess(this);
+	}
+	else
+	{
+		// Handle the case where the player controller is not valid
+		UE_LOG(LogTemp, Error, TEXT("Player controller is not valid"));
 	}
 }
 
@@ -115,7 +133,13 @@ void ATeamECapstoneCharacter::TrasitionMovementStates()
 	else
 	{
 		GetCharacterMovement()->GravityScale = 1;
+		GetWorldTimerManager().ClearTimer(StressHandle);
 	}
+}
+
+void ATeamECapstoneCharacter::IncreaseStress()
+{
+	StressPrecentage += StressIncreaseRate;
 }
 
 
@@ -197,6 +221,10 @@ void ATeamECapstoneCharacter::Interact(const FInputActionValue& Value)
 	//Find all actors of boat class
 	TArray<AActor*> FoundActors1;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), APCTerminal::StaticClass(), FoundActors1);
+
+	//Find all actors of boat class
+	TArray<AActor*> FoundActors2;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ADiveBot::StaticClass(), FoundActors2);
 	//THIS IS A SHITTY WAY TO DO THIS BUT ITS JUST FOR THE DEMO. THERE WILL BE AN INTERACTABLE OBJECTS PARENT THAT WILL BE INHERITABLE FROM 
 	//Line trace
 	if (GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, EndLocation, ECC_GameTraceChannel1, QueryParams))
@@ -226,6 +254,16 @@ void ATeamECapstoneCharacter::Interact(const FInputActionValue& Value)
 				}
 				
 			}
+
+			//If hit result is the boat, call interact function
+			if (HitResult.GetActor() == FoundActors2[0])
+			{
+				ADiveBot* bot = FoundActors2[0] ? Cast<ADiveBot>(FoundActors2[0]) : nullptr;
+				if (bot)
+				{
+					bot->Interact();
+				}
+			}
 		}
 
 	}
@@ -240,6 +278,19 @@ void ATeamECapstoneCharacter::LowerCage()
 void ATeamECapstoneCharacter::RaiseCage()
 {
 	CageClass->RaiseCage();
+}
+
+void ATeamECapstoneCharacter::Jump()
+{
+		Super::Jump();
+}
+
+void ATeamECapstoneCharacter::EndJump()
+{
+	if (!bIsSwiming)
+	{
+		Super::StopJumping();
+	}
 }
 
 void ATeamECapstoneCharacter::Tick(float delta)
@@ -262,6 +313,14 @@ void ATeamECapstoneCharacter::Tick(float delta)
 		GetCharacterMovement()->Velocity.Z = NewZVelocity;
 	}
 
+	if (bIsSwiming)
+	{
+		if (!GetWorldTimerManager().IsTimerActive(StressHandle))
+		{
+			GetWorld()->GetTimerManager().SetTimer(StressHandle, this, &ATeamECapstoneCharacter::IncreaseStress, TimeToApplyStress, false);
+		}
+		GEngine->AddOnScreenDebugMessage(-1, -1, FColor::Orange,"StressLevel: " + FString::SanitizeFloat(StressPrecentage) + "%");
+	}
 }
 
 void ATeamECapstoneCharacter::SetHasRifle(bool bNewHasRifle)

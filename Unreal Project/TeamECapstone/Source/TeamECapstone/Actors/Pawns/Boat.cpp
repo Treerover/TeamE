@@ -2,15 +2,16 @@
 
 
 #include "Boat.h"
+#include "Actors/BoatWheel.h"
 #include "Animation/AnimInstance.h"
 #include "Camera/CameraComponent.h"
-#include "Components/CapsuleComponent.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "TeamECapstoneCharacter.h"
-
+#include "Components/SceneComponent.h"
+#include "Components/CapsuleComponent.h"
 
 // Sets default values
 ABoat::ABoat()
@@ -41,7 +42,8 @@ ABoat::ABoat()
 	BoatCamera->bUsePawnControlRotation = false; // Disable pawn control over camera rotation
 	BoatCamera->SetRelativeRotation(FRotator(0.0f, -20.0f, 0.0f)); // Set the initial camera rotation
 
-
+	PlayerDrivingPoint = CreateDefaultSubobject<USceneComponent>(TEXT("BoatSeat"));
+	PlayerDrivingPoint->SetupAttachment(RootComponent);
 
 	//Add interactable tag
 	Tags.Add("Interactable");
@@ -185,16 +187,19 @@ void ABoat::UnPossessBoat()
 	if (PlayerController)
 	{
 		// Store the current location of the player pawn
-		FVector CurrentLocation = PlayerPawn->GetActorLocation();
+		//FVector CurrentLocation = PlayerPawn->GetActorLocation();
 
 		// Unpossess the boat pawn
 		PlayerController->UnPossess();
 
 		// Possess the player pawn
-		PlayerController->Possess(PlayerPawn);
+		PlayerPawn->PossesPlayer();
+
+		PlayerPawn->SetActorLocation(PlayerDrivingPoint->GetComponentLocation());
+		MyWheel->PlayerPawn = nullptr;
 
 		// Restore the player character's location
-		PlayerPawn->SetActorLocation(CurrentLocation);
+		//Player->SetActorLocation(CurrentLocation);
 	}
 }
 
