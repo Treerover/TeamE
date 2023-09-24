@@ -23,7 +23,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Collision")
 		class UBoxComponent* CollisionBox;
 
-
+	//TriggerBox for pulling player
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Collision")
+		class UBoxComponent* TriggerBox;
 
 protected:
 	// Called when the game starts or when spawned
@@ -45,4 +47,12 @@ public:
 	// Original location
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "1_Dive Cage")
 		FVector OriginalLocation;
+
+	UFUNCTION()
+		void OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
+	UFUNCTION()
+		void OnOverlapEnd(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+
+	AActor* Player = nullptr;
 };

@@ -97,6 +97,7 @@ public:
 protected:
 	/** Called for movement input */
 	void Move(const FInputActionValue& Value);
+	void StopMove(const FInputActionValue& Value);
 
 	/** Called for looking input */
 	void Look(const FInputActionValue& Value);
@@ -119,6 +120,10 @@ protected:
 	/** Called for raise cage input */
 	void RaiseCage();
 
+	void Jump();
+	void EndJump();
+
+	virtual void Tick(float delta) override;
 
 protected:
 	// APawn interface
@@ -133,5 +138,51 @@ public:
 
 	//TSubclass of cage
 	class ADiveCage* CageClass;
+
+	void PossesPlayer();
+
+	//Movement stuff --------------------
+protected:
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Movement)
+		bool bIsSwiming = false, bJustEnteredWater, bIsMoving = false, bIsMovingZ = false;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Movement)
+		float SwimSpeed = 10;
+
+	FTimerHandle WaterTimer;
+
+	/// <summary>
+	/// Used to manage the "bJustEnteredWaterBool" used to force the player to dip into the water before allowing them to control the z axis
+	/// </summary>
+	void TurnOffWaterWait();
+
+public:
+
+	/// <summary>
+	/// Called when the player enters/exits water, allows players to change between swiming and walking states
+	/// </summary>
+	void TrasitionMovementStates();
+
+
+	// Stress And Health ---------------------
+
+	protected:
+		//Defaults
+		UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Health)
+			int MaxHealthStates = 4;
+
+		float StressPrecentage = 0;
+		int CurrentHelthState = MaxHealthStates;
+
+		//Increase Rates
+		UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Movement)
+			float StressIncreaseRate = 0.5; // Per SetTime
+		UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Movement)
+			float TimeToApplyStress = 4; // Time Player needs to be underwater to applay stress
+
+		void IncreaseStress();
+
+		FTimerHandle StressHandle;
 };
 

@@ -12,6 +12,7 @@
 #include <BoatWheel.h>
 #include "PCTerminal.h"
 #include "DiveCage.h"
+#include "DiveBot.h"
 #include <PhotoCameraComponent.h>
 
 
@@ -87,11 +88,12 @@ void ATeamECapstoneCharacter::SetupPlayerInputComponent(class UInputComponent* P
 	if (UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(PlayerInputComponent))
 	{
 		//Jumping
-		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &ACharacter::Jump);
-		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
+		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &ATeamECapstoneCharacter::Jump);
+		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ATeamECapstoneCharacter::EndJump);
 
 		//Moving
 		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ATeamECapstoneCharacter::Move);
+		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Completed, this, &ATeamECapstoneCharacter::StopMove);
 
 		//Looking
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &ATeamECapstoneCharacter::Look);
@@ -118,20 +120,86 @@ void ATeamECapstoneCharacter::SetupPlayerInputComponent(class UInputComponent* P
 
 
 	}
+	else
+	{
+		// Handle the case where the player controller is not valid
+		UE_LOG(LogTemp, Error, TEXT("Player controller is not valid"));
+	}
+}
+
+void ATeamECapstoneCharacter::TurnOffWaterWait()
+{
+	bJustEnteredWater = false;
+	GetCharacterMovement()->Velocity = FVector::ZeroVector;
+}
+
+void ATeamECapstoneCharacter::TrasitionMovementStates()
+{
+	bIsSwiming = !bIsSwiming;
+	
+	if (bIsSwiming)
+	{
+		GetCharacterMovement()->GravityScale = 0;
+		GetWorld()->GetTimerManager().SetTimer(WaterTimer, this, &ATeamECapstoneCharacter::TurnOffWaterWait, 1.7, false);
+		bJustEnteredWater = true;
+	}
+	else
+	{
+		GetCharacterMovement()->GravityScale = 1;
+		GetWorldTimerManager().ClearTimer(StressHandle);
+	}
+}
+
+void ATeamECapstoneCharacter::IncreaseStress()
+{
+	StressPrecentage += StressIncreaseRate;
 }
 
 
 void ATeamECapstoneCharacter::Move(const FInputActionValue& Value)
 {
+	bIsMoving = true;
+
 	// input is a Vector2D
+
 	FVector2D MovementVector = Value.Get<FVector2D>();
 
 	if (Controller != nullptr)
 	{
-		// add movement 
-		AddMovementInput(GetActorForwardVector(), MovementVector.Y);
-		AddMovementInput(GetActorRightVector(), MovementVector.X);
+		if (!bIsSwiming)
+		{
+			// add movement 
+			AddMovementInput(GetActorForwardVector(), MovementVector.Y);
+			AddMovementInput(GetActorRightVector(), MovementVector.X);
+		}
+		else
+		{
+			FVector ForwardVelo;
+			FVector NewTargetVelocity;
+
+			FVector RightVelo = GetActorRightVector() * 400 * MovementVector.X;
+
+			if (!bJustEnteredWater)
+			{
+				ForwardVelo = FirstPersonCameraComponent->GetForwardVector() * 400 * MovementVector.Y;
+				NewTargetVelocity = ForwardVelo + RightVelo;
+			}
+			else
+			{
+				ForwardVelo = GetActorForwardVector() * 400 * MovementVector.Y;
+				NewTargetVelocity = ForwardVelo + RightVelo;
+				NewTargetVelocity.Z = GetCharacterMovement()->Velocity.Z;
+			}
+
+
+			GetCharacterMovement()->Velocity = FMath::Lerp(GetCharacterMovement()->Velocity, NewTargetVelocity, 0.8);
+		}
 	}
+}
+
+void ATeamECapstoneCharacter::StopMove(const FInputActionValue& Value)
+{
+	bIsMoving = false;
 }
 
 void ATeamECapstoneCharacter::Look(const FInputActionValue& Value)
@@ -166,6 +234,10 @@ void ATeamECapstoneCharacter::Interact(const FInputActionValue& Value)
 	//Find all actors of boat class
 	TArray<AActor*> FoundActors1;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), APCTerminal::StaticClass(), FoundActors1);
+
+	//Find all actors of boat class
+	TArray<AActor*> FoundActors2;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ADiveBot::StaticClass(), FoundActors2);
 	//THIS IS A SHITTY WAY TO DO THIS BUT ITS JUST FOR THE DEMO. THERE WILL BE AN INTERACTABLE OBJECTS PARENT THAT WILL BE INHERITABLE FROM 
 	//Line trace
 	if (GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, EndLocation, ECC_GameTraceChannel1, QueryParams))
@@ -194,6 +266,16 @@ void ATeamECapstoneCharacter::Interact(const FInputActionValue& Value)
 					bIsInTerminal = true;
 				}
 				
+			}
+
+			//If hit result is the boat, call interact function
+			if (HitResult.GetActor() == FoundActors2[0])
+			{
+				ADiveBot* bot = FoundActors2[0] ? Cast<ADiveBot>(FoundActors2[0]) : nullptr;
+				if (bot)
+				{
+					bot->Interact();
+				}
 			}
 		}
 
@@ -235,6 +317,49 @@ void ATeamECapstoneCharacter::LowerCage()
 void ATeamECapstoneCharacter::RaiseCage()
 {
 	CageClass->RaiseCage();
+}
+
+void ATeamECapstoneCharacter::Jump()
+{
+		Super::Jump();
+}
+
+void ATeamECapstoneCharacter::EndJump()
+{
+	if (!bIsSwiming)
+	{
+		Super::StopJumping();
+	}
+}
+
+void ATeamECapstoneCharacter::Tick(float delta)
+{
+	Super::Tick(delta);
+
+	if (!bIsMoving && bIsSwiming)
+	{
+		FVector NewVelocity = GetCharacterMovement()->Velocity - ((GetCharacterMovement()->Velocity / 1.2) * delta);
+
+		NewVelocity.Z = GetCharacterMovement()->Velocity.Z;
+
+		GetCharacterMovement()->Velocity = NewVelocity;
+	}
+
+	if (!bIsMovingZ && bIsSwiming)
+	{
+		double NewZVelocity = GetCharacterMovement()->Velocity.Z - ((GetCharacterMovement()->Velocity / 1.2) * delta).Z;
+
+		GetCharacterMovement()->Velocity.Z = NewZVelocity;
+	}
+
+	if (bIsSwiming)
+	{
+		if (!GetWorldTimerManager().IsTimerActive(StressHandle))
+		{
+			GetWorld()->GetTimerManager().SetTimer(StressHandle, this, &ATeamECapstoneCharacter::IncreaseStress, TimeToApplyStress, false);
+		}
+		GEngine->AddOnScreenDebugMessage(-1, -1, FColor::Orange,"StressLevel: " + FString::SanitizeFloat(StressPrecentage) + "%");
+	}
 }
 
 void ATeamECapstoneCharacter::SetHasRifle(bool bNewHasRifle)
