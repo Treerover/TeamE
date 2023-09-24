@@ -127,6 +127,24 @@ void ATeamECapstoneCharacter::SetupPlayerInputComponent(class UInputComponent* P
 	}
 }
 
+void ATeamECapstoneCharacter::PossesPlayer()
+{
+	SetActorEnableCollision(true);
+	APlayerController* PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+
+	// Ensure we have a valid player controller
+	if (PlayerController)
+	{
+			PlayerController->Possess(this);
+	}
+	else
+	{
+		// Handle the case where the player controller is not valid
+		UE_LOG(LogTemp, Error, TEXT("Player controller is not valid"));
+	}
+
+}
+
 void ATeamECapstoneCharacter::TurnOffWaterWait()
 {
 	bJustEnteredWater = false;

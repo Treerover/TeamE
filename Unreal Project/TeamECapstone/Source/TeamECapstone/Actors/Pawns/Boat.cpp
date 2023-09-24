@@ -173,6 +173,7 @@ void ABoat::PossessBoat()
 
 			// Possess the boat pawn
 			PlayerController->Possess(this);
+
 		}
 		else
 		{
