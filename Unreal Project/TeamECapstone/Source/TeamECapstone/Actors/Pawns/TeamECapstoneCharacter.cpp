@@ -241,7 +241,7 @@ void ATeamECapstoneCharacter::Interact(const FInputActionValue& Value)
 {
 	// Perform the raycast
 	FHitResult HitResult;
-	FVector StartLocation = GetActorLocation();
+	FVector StartLocation = GetActorLocation() + FVector(0.0f, 0.0f, 50.0f);
 	//End location based off player lookat view
 	FVector EndLocation = StartLocation + (GetControlRotation().Vector() * 500.0f);
 	FCollisionQueryParams QueryParams;
