@@ -59,30 +59,30 @@ void AEnemyFish::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	switch (AState) {
-	case EnemyFishState::Idle:
-		Idle(DeltaTime);
-		break;
-	case EnemyFishState::Patrolling:
-		Patrol(DeltaTime);
-		break;
-	case EnemyFishState::Flee:
-		SwimAway(DeltaTime);
-		break;
-	case EnemyFishState::Attack:
+	//switch (AState) {
+	//case EnemyFishState::Idle:
+	//	Idle(DeltaTime);
+	//	break;
+	//case EnemyFishState::Patrolling:
+	//	Patrol(DeltaTime);
+	//	break;
+	//case EnemyFishState::Flee:
+	//	SwimAway(DeltaTime);
+	//	break;
+	//case EnemyFishState::Attack:
 
 
-		break;
-	case EnemyFishState::Feed:
-		break;
+	//	break;
+	//case EnemyFishState::Feed:
+	//	break;
 
-	case EnemyFishState::Sleep:
+	//case EnemyFishState::Sleep:
 
 
 
-		break;
+	//	break;
 
-	}
+	//}
 	
 }
 

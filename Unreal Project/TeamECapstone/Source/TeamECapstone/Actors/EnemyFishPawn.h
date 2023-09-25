@@ -3,11 +3,11 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Actor.h"
-#include "EnemyFish.generated.h"
+#include "GameFramework/Pawn.h"
+#include "EnemyFishPawn.generated.h"
 
 UENUM(BlueprintType)
-enum class EnemyFishState
+enum class EnemyPawnFishState
 {
 	Idle,
 	Patrolling,
@@ -22,17 +22,13 @@ enum class EnemyFishState
 
 
 UCLASS()
-class TEAMECAPSTONE_API AEnemyFish : public AActor
+class TEAMECAPSTONE_API AEnemyFishPawn : public APawn
 {
 	GENERATED_BODY()
-	
-public:	
-	// Sets default values for this actor's properties
-	AEnemyFish();
 
-protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
+public:
+	// Sets default values for this pawn's properties
+	AEnemyFishPawn();
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Enemy_Fish")
 		class UBoxComponent* CollisionBox;
@@ -47,7 +43,7 @@ protected:
 		FVector DiverLocation;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Enemy_Fish")
-		EnemyFishState AState;
+		EnemyPawnFishState AState;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Enemy_Fish")
 		float MoveSpeed;
@@ -73,10 +69,16 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Enemy_Fish")
 		float IdleTime;
 
+protected:
+	// Called when the game starts or when spawned
+	virtual void BeginPlay() override;
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	// Called to bind functionality to input
+	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	void Idle(float DeltaTime);
 
@@ -95,12 +97,12 @@ public:
 
 	void SetupDiverReference();
 
-	FORCEINLINE void SetStatePatrol() { AState = EnemyFishState::Patrolling; };
-	FORCEINLINE void SetStateIdle() { AState = EnemyFishState::Idle; };
-	FORCEINLINE void SetStateFlee() { AState = EnemyFishState::Flee; };
-	FORCEINLINE void SetStateAttack() { AState = EnemyFishState::Sleep; };
-	FORCEINLINE void SetStateFeed() { AState = EnemyFishState::Feed; };
-	FORCEINLINE void SetStateSleep() { AState = EnemyFishState::Attack; };
+	FORCEINLINE void SetStatePatrol() { AState = EnemyPawnFishState::Patrolling; };
+	FORCEINLINE void SetStateIdle() { AState = EnemyPawnFishState::Idle; };
+	FORCEINLINE void SetStateFlee() { AState = EnemyPawnFishState::Flee; };
+	FORCEINLINE void SetStateAttack() { AState = EnemyPawnFishState::Sleep; };
+	FORCEINLINE void SetStateFeed() { AState = EnemyPawnFishState::Feed; };
+	FORCEINLINE void SetStateSleep() { AState = EnemyPawnFishState::Attack; };
 
 
 };
