@@ -28,8 +28,12 @@ public:
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Boat")
         class UStaticMeshComponent* BoatMesh;
 
+
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Boat")
 		class UBoxComponent* BoxCollision;
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Boat")
+        class USceneComponent* PlayerDrivingPoint; // used to set player location in a safe spot after unpossesing the boat
 
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Boat")
         class USpringArmComponent* SpringArm;
@@ -52,6 +56,8 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	    class UInputAction* UnPossessBoatAction;
 
+    class ABoatWheel* MyWheel = nullptr;
+
 
     // Movement
     void MoveForward();
@@ -73,6 +79,12 @@ public:
     bool bIsAccelerating = false;
     bool bIsDecelerating = false;
     bool bMoving = false;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Boat")
+    bool bIsPossessed = false;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Boat")
+        FVector SavedBoatLocation;
 
     //Player pawn data
     class ATeamECapstoneCharacter* PlayerPawn;

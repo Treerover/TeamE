@@ -35,7 +35,7 @@ void ABoatWheel::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 
-	if (PlayerPawn)
+	if (PlayerPawn && PlayerPawn)
 	{
 		//Set the location of the player pawn to the location of this actor
 		PlayerPawn->SetActorLocation(GetActorLocation() + Offset);
@@ -54,5 +54,5 @@ void ABoatWheel::Interact_Implementation()
 	PlayerPawn->SetActorEnableCollision(false);
 
 	Boat->PossessBoat();
-
+	Boat->MyWheel = this;
 }

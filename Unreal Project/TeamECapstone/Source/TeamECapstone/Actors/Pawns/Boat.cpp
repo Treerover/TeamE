@@ -2,15 +2,16 @@
 
 
 #include "Boat.h"
+#include "Actors/BoatWheel.h"
 #include "Animation/AnimInstance.h"
 #include "Camera/CameraComponent.h"
-#include "Components/CapsuleComponent.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "TeamECapstoneCharacter.h"
-
+#include "Components/SceneComponent.h"
+#include "Components/CapsuleComponent.h"
 
 // Sets default values
 ABoat::ABoat()
@@ -20,9 +21,10 @@ ABoat::ABoat()
 
 	//Mesh 
 	BoatMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BoatMesh"));
-	RootComponent = BoatMesh;
+	BoatMesh->SetupAttachment(RootComponent);
 	BoatMesh->SetCollisionProfileName(TEXT("Pawn"));
 	BoatMesh->SetSimulatePhysics(true);
+	BoatMesh->SetWorldRotation(FRotator(0.0f, 0.0f, 90.0f));
 
 	// Create and attach the spring arm
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
@@ -41,7 +43,8 @@ ABoat::ABoat()
 	BoatCamera->bUsePawnControlRotation = false; // Disable pawn control over camera rotation
 	BoatCamera->SetRelativeRotation(FRotator(0.0f, -20.0f, 0.0f)); // Set the initial camera rotation
 
-
+	PlayerDrivingPoint = CreateDefaultSubobject<USceneComponent>(TEXT("BoatSeat"));
+	PlayerDrivingPoint->SetupAttachment(RootComponent);
 
 	//Add interactable tag
 	Tags.Add("Interactable");
@@ -78,9 +81,6 @@ void ABoat::MoveForward()
 	// Scale the input value by the movement speed
 	FVector ForwardVector = GetActorForwardVector();
 
-	// Output current speed as debug msg
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Current Speed: %f"), CurrentSpeed));
-
 	// Move the boat
 	AddActorWorldOffset(-ForwardVector * CurrentSpeed * GetWorld()->GetDeltaSeconds() * MovementSpeed, true);
 }
@@ -106,8 +106,6 @@ void ABoat::Decelerate()
 		// Move the boat
 		AddActorWorldOffset(-ForwardVector * CurrentSpeed * GetWorld()->GetDeltaSeconds() * MovementSpeed, true);
 
-		// Output current speed as debug msg
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Current Speed: %f"), CurrentSpeed));
 	}
 }
 
@@ -138,6 +136,19 @@ void ABoat::Tick(float DeltaTime)
 		Decelerate();
 	}
 
+
+
+	if (bIsPossessed == true)
+	{
+		//Simulate physics
+		BoatMesh->SetSimulatePhysics(true);
+	}
+	else
+	{
+		//Stop simulating physics
+		BoatMesh->SetSimulatePhysics(false);
+	}
+
 }
 
 
@@ -146,6 +157,7 @@ void ABoat::PossessBoat()
 {
 	// Get the first player controller
 	APlayerController* PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+	bIsPossessed = true;
 
 	// Ensure we have a valid player controller
 	if (PlayerController)
@@ -161,6 +173,7 @@ void ABoat::PossessBoat()
 
 			// Possess the boat pawn
 			PlayerController->Possess(this);
+
 		}
 		else
 		{
@@ -178,6 +191,7 @@ void ABoat::PossessBoat()
 
 void ABoat::UnPossessBoat()
 {
+	bIsPossessed = false;
 	// Get the first player controller
 	APlayerController* PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
 
@@ -185,16 +199,19 @@ void ABoat::UnPossessBoat()
 	if (PlayerController)
 	{
 		// Store the current location of the player pawn
-		FVector CurrentLocation = PlayerPawn->GetActorLocation();
+		//FVector CurrentLocation = PlayerPawn->GetActorLocation();
 
 		// Unpossess the boat pawn
 		PlayerController->UnPossess();
 
 		// Possess the player pawn
-		PlayerController->Possess(PlayerPawn);
+		PlayerPawn->PossesPlayer();
+
+		PlayerPawn->SetActorLocation(PlayerDrivingPoint->GetComponentLocation());
+		MyWheel->PlayerPawn = nullptr;
 
 		// Restore the player character's location
-		PlayerPawn->SetActorLocation(CurrentLocation);
+		//Player->SetActorLocation(CurrentLocation);
 	}
 }
 

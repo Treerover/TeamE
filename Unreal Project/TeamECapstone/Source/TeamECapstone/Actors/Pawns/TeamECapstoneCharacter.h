@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "InputActionValue.h"
+#include "GameFramework/SpringArmComponent.h"
 #include "TeamECapstoneCharacter.generated.h"
 
 class UInputComponent;
@@ -26,6 +27,14 @@ class ATeamECapstoneCharacter : public ACharacter
 	/** First person camera */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	UCameraComponent* FirstPersonCameraComponent;
+
+	/** First person photo camera */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
+	UCameraComponent* PhotoCamera;
+
+	///** Photo Camera Component */
+	//UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
+	//class UPhotoCameraComponent* PhotoCameraComponent;
 
 	/** MappingContext */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
@@ -50,6 +59,12 @@ class ATeamECapstoneCharacter : public ACharacter
 	/** Raise Cage Input Action*/
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 		class UInputAction* RaiseCageAction;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+		class UInputAction* AimCameraAction;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+		class UInputAction* TakePhotoAction;
 	
 public:
 	ATeamECapstoneCharacter();
@@ -67,7 +82,13 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Weapon)
 	bool bHasRifle;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Weapon)
+		class USpringArmComponent* SpringArm;
+
 	bool bIsInTerminal = false;
+
+	UPROPERTY(Editanywhere, BlueprintReadWrite, Category = Weapon)
+	bool bIsAimingCamera = false;
 
 	/** Setter to set the bool */
 	UFUNCTION(BlueprintCallable, Category = Weapon)
@@ -80,6 +101,7 @@ public:
 protected:
 	/** Called for movement input */
 	void Move(const FInputActionValue& Value);
+	void StopMove(const FInputActionValue& Value);
 
 	/** Called for looking input */
 	void Look(const FInputActionValue& Value);
@@ -87,12 +109,27 @@ protected:
 	/** Called for interact input */
 	void Interact(const FInputActionValue& Value);
 
+	/** Called for start aiming camera input */
+	void StartAimingCamera(const FInputActionValue& Value);
+
+	/** Called for stop aiming camera input */
+	void StopAimingCamera(const FInputActionValue& Value);
+
+	/** Called for taking photo input */
+	void TakePhoto(const FInputActionValue& Value);
+
 	/** Called for lower cage input */
+	UFUNCTION(BlueprintCallable, Category = Cage)
 	void LowerCage();
 
 	/** Called for raise cage input */
+	UFUNCTION(BlueprintCallable, Category = Cage)
 	void RaiseCage();
 
+	void Jump();
+	void EndJump();
+
+	virtual void Tick(float delta) override;
 
 protected:
 	// APawn interface
@@ -107,5 +144,51 @@ public:
 
 	//TSubclass of cage
 	class ADiveCage* CageClass;
+
+	void PossesPlayer();
+
+	//Movement stuff --------------------
+protected:
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Movement)
+		bool bIsSwiming = false, bJustEnteredWater, bIsMoving = false, bIsMovingZ = false;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Movement)
+		float SwimSpeed = 10;
+
+	FTimerHandle WaterTimer;
+
+	/// <summary>
+	/// Used to manage the "bJustEnteredWaterBool" used to force the player to dip into the water before allowing them to control the z axis
+	/// </summary>
+	void TurnOffWaterWait();
+
+public:
+
+	/// <summary>
+	/// Called when the player enters/exits water, allows players to change between swiming and walking states
+	/// </summary>
+	void TrasitionMovementStates();
+
+
+	// Stress And Health ---------------------
+
+	protected:
+		//Defaults
+		UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Health)
+			int MaxHealthStates = 4;
+
+		float StressPrecentage = 0;
+		int CurrentHelthState = MaxHealthStates;
+
+		//Increase Rates
+		UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Movement)
+			float StressIncreaseRate = 0.5; // Per SetTime
+		UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Movement)
+			float TimeToApplyStress = 4; // Time Player needs to be underwater to applay stress
+
+		void IncreaseStress();
+
+		FTimerHandle StressHandle;
 };
 
