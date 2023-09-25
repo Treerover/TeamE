@@ -16,25 +16,16 @@ ADiveBot::ADiveBot()
  	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	// Collision Box Setup
-	CollisionBox = CreateDefaultSubobject<UBoxComponent>(TEXT("Collision Box"));
-	SetRootComponent(CollisionBox);
-	CollisionBox->SetBoxExtent(FVector(25, 25, 25));
-	CollisionBox->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-	CollisionBox->SetCollisionProfileName("NoCollision");
-	CollisionBox->SetSimulatePhysics(false);
-	//CollisionBox->SetEnableGravity(false);
+	//// Collision Box Setup
+	//CollisionBox = CreateDefaultSubobject<UBoxComponent>(TEXT("Collision Box"));
+	//SetRootComponent(CollisionBox);
+	//CollisionBox->SetBoxExtent(FVector(25, 25, 25));
+	//CollisionBox->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	//CollisionBox->SetCollisionProfileName("NoCollision");
+	//CollisionBox->SetSimulatePhysics(false);
 
-	// Mesh Setup
-	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Camera Mesh"));
-	Mesh->SetupAttachment(CollisionBox);
-	Mesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-	Mesh->SetCollisionProfileName("NoCollision");
+	////CollisionBox->SetEnableGravity(false);
 
-	static ConstructorHelpers::FObjectFinder<UStaticMesh>MeshAsset(TEXT("StaticMesh'/Game/LevelPrototyping/Meshes/SM_Cube.SM_Cube'"));
-	UStaticMesh* Asset = MeshAsset.Object;
-	Mesh->SetStaticMesh(Asset);
-	Mesh->SetRelativeScale3D(FVector(0.5f, 0.5f, 0.5f));
 
 	HoverDistance = 200.0f;
 	Speed = 10.0f;
@@ -44,6 +35,14 @@ ADiveBot::ADiveBot()
 	FirstPersonCameraComponent->SetupAttachment(RootComponent);
 	FirstPersonCameraComponent->SetRelativeLocation(FVector(-10.f, 0.f, 60.f)); // Position the camera
 	FirstPersonCameraComponent->bUsePawnControlRotation = true;
+
+
+	// Mesh Setup
+	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Camera Mesh"));
+	Mesh->SetupAttachment(FirstPersonCameraComponent);
+	Mesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	Mesh->SetCollisionProfileName("NoCollision");
+	Mesh->SetOnlyOwnerSee(true);
 
 	Tags.Add("Interactable");
 

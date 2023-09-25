@@ -35,7 +35,7 @@ void AFoid::BeginPlay()
 	Super::BeginPlay();
 
 
-
+	Radius = FMath::RandRange(200.0f, 400.0f);
 }
 
 // Called every frame
@@ -48,27 +48,25 @@ void AFoid::Tick(float DeltaTime)
 
 	if (MySwarmLeader)
 	{
-		float spawnRadius = MySwarmLeader->SpawnRadius;
-
 		FVector leaderLocation = MySwarmLeader->GetActorLocation();
 		FVector DirectionToCenter = leaderLocation - location;
 
 		float rotationAngle = FMath::Atan2(DirectionToCenter.Y, DirectionToCenter.X) * 180 / PI;
 		rotationAngle += DeltaTime * RotationSpeed;
 
-		SetActorRotation(FRotator(0.0f, rotationAngle, 0.0f));
+		SetActorRotation(FRotator(0.0f, rotationAngle + 90.0f, 0.0f));
 
-		FVector forwardVector = GetActorRightVector();
+		FVector forwardVector = GetActorForwardVector();
 		newPos = location + forwardVector * Speed * DeltaTime;
 		SetActorLocation(newPos);
 
 		// If it starts to drift outwards, say no
 		float distanceToLeader = (GetActorLocation() - leaderLocation).Length();
 
-		if (distanceToLeader > spawnRadius)
+		if (distanceToLeader > Radius)
 		{
-			newPos.X = leaderLocation.X + ((GetActorLocation() - leaderLocation).GetSafeNormal()).X * spawnRadius;
-			newPos.Y = leaderLocation.Y + ((GetActorLocation() - leaderLocation).GetSafeNormal()).Y * spawnRadius;
+			newPos.X = leaderLocation.X + ((GetActorLocation() - leaderLocation).GetSafeNormal()).X * Radius;
+			newPos.Y = leaderLocation.Y + ((GetActorLocation() - leaderLocation).GetSafeNormal()).Y * Radius;
 			
 			SetActorLocation(newPos);
 		}

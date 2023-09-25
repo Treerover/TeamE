@@ -76,4 +76,6 @@ public:
 	void SetSwarm(AFishSwarm* swarm);
 
 	void SwarmMovement();
+
+	float Radius;
 };

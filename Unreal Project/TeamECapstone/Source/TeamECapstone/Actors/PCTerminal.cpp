@@ -70,7 +70,7 @@ void APCTerminal::SpawnCamera()
 	cam = GetWorld()->SpawnActor<ACameraActor>(FVector(0.0f, 0.0f, 0.0f), FRotator(0, 0, 0), spawnparams);
 	cam->Tags.Add("TerminalCam");
 	cam->AttachToComponent(divecagearm, FAttachmentTransformRules::KeepRelativeTransform);
-	cam->AddActorWorldTransform(FTransform(FRotator(0, 90, 0),FVector(-50,0,-260)));
+	cam->AddActorWorldTransform(FTransform(FRotator(90, 90, 0),FVector(-50,0,-260)));
 	
 
 	
