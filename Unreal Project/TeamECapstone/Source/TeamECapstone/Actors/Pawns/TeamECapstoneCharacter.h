@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "InputActionValue.h"
+#include "GameFramework/SpringArmComponent.h"
 #include "TeamECapstoneCharacter.generated.h"
 
 class UInputComponent;
@@ -80,6 +81,9 @@ public:
 	/** Bool for AnimBP to switch to another animation set */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Weapon)
 	bool bHasRifle;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Weapon)
+		class USpringArmComponent* SpringArm;
 
 	bool bIsInTerminal = false;
 

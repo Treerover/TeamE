@@ -27,8 +27,8 @@ ADiveCage::ADiveCage()
 	TriggerBox->OnComponentEndOverlap.AddDynamic(this, &ADiveCage::OnOverlapEnd);
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("Spring Arm"));
 	SpringArm->SetupAttachment(Mesh);
-	SpringArm->TargetArmLength = -700.0f;
-	SpringArm->AddLocalRotation(FRotator(30, 0, 0));
+	SpringArm->TargetArmLength = 0.0f;
+	//SpringArm->AddLocalRotation(FRotator(0, 0, 0));
 	SpringArm->bDoCollisionTest = false;
 	
 

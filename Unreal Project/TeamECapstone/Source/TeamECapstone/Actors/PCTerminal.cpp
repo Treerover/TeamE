@@ -50,22 +50,37 @@ void APCTerminal::SpawnCamera()
 	ACameraActor* cam;
 	
 	TArray<AActor*> ActorsToFind;
+
 	USpringArmComponent* divecagearm;
-
-	cam = GetWorld()->SpawnActor<ACameraActor>(FVector(100.0f, 1000.0f, 150.0f), FRotator(0,180,0), spawnparams);
-	cam->Tags.Add("TerminalCam");
-
-	cam = GetWorld()->SpawnActor<ACameraActor>(FVector(-8000.0f, 1000.0f, 150.0f), FRotator(0, 0, 0), spawnparams);
-	cam->Tags.Add("TerminalCam");
-
-	cam = GetWorld()->SpawnActor<ACameraActor>(FVector(0, 0, 0), FRotator(0, 180, 0), spawnparams);
-	cam->Tags.Add("DiveCam");
-
-	
+	USpringArmComponent* playerspringarm;
 
 	UGameplayStatics::GetAllActorsWithTag(GetWorld(), "DiveCage", ActorsToFind);
 	divecagearm = ActorsToFind[0]->GetComponentByClass<USpringArmComponent>();
-	//divecagearm->AttachToComponent(ActorsToFind[0]->GetRootComponent(), FAttachmentTransformRules::KeepRelativeTransform);
 
+	cam = GetWorld()->SpawnActor<ACameraActor>(FVector(0.0f, 0.0f, 0.0f), FRotator(0,180,0), spawnparams);
+	cam->Tags.Add("TerminalCam");
 	cam->AttachToComponent(divecagearm, FAttachmentTransformRules::KeepRelativeTransform);
+	cam->AddActorWorldTransform(FTransform(FRotator(-30, 0, 0), FVector(-600, 0, 250)));
+
+	cam = GetWorld()->SpawnActor<ACameraActor>(FVector(0.0f, 0.0f, 0.0f), FRotator(0, 0, 0), spawnparams);
+	cam->Tags.Add("TerminalCam");
+	cam->AttachToComponent(divecagearm, FAttachmentTransformRules::KeepRelativeTransform);
+	cam->AddActorWorldTransform(FTransform(FRotator(0, 180, 0), FVector(400, 0, 50)));
+
+	cam = GetWorld()->SpawnActor<ACameraActor>(FVector(0.0f, 0.0f, 0.0f), FRotator(0, 0, 0), spawnparams);
+	cam->Tags.Add("TerminalCam");
+	cam->AttachToComponent(divecagearm, FAttachmentTransformRules::KeepRelativeTransform);
+	cam->AddActorWorldTransform(FTransform(FRotator(0, 90, 0),FVector(-50,0,-260)));
+	
+
+	
+	
+	//divecagearm->AttachToComponent(ActorsToFind[0]->GetRootComponent(), FAttachmentTransformRules::KeepRelativeTransform);
+	
+
+	cam = GetWorld()->SpawnActor<ACameraActor>(FVector(0, 0, 0), FRotator(0, 0, 0), spawnparams);
+	cam->Tags.Add("TerminalCam");
+	playerspringarm = GetWorld()->GetFirstPlayerController()->GetPawn()->GetComponentByClass<USpringArmComponent>();
+	cam->AttachToComponent(playerspringarm, FAttachmentTransformRules::KeepRelativeTransform);
+	
 }

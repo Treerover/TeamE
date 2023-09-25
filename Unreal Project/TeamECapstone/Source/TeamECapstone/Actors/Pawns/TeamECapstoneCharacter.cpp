@@ -43,6 +43,10 @@ ATeamECapstoneCharacter::ATeamECapstoneCharacter()
 	//// Photo camera component
 	//PhotoCameraComponent = CreateDefaultSubobject<UPhotoCameraComponent>(TEXT("PhotoCameraComponent"));
 
+	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("Spring Arm"));
+	SpringArm->SetupAttachment(RootComponent);
+	SpringArm->TargetArmLength = 0.0f;
+	SpringArm->AddLocalOffset(FVector(0, 0, 50));
 
 
 	// Create a mesh component that will be used when being viewed from a '1st person' view (when controlling this pawn)
