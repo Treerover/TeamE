@@ -115,4 +115,14 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Quest Variable")
 	int CurrentStage;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Quest Variable")
+	FStageDetails CurrentStageDetails;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Quest Variable")
+	TMap<FString, int> CurrentObjectiveDetails;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Quest Variable")
+	bool IsComplete;
+
+
 };
